@@ -1,0 +1,24 @@
+.repoScreen {
+  display: flex;
+  height: 100vh;
+
+  .tableContainer {
+    width: 70%;
+    margin-left: 32px;
+    margin-top: 32px;
+  }
+
+  .detailContainer {
+    width: 30%;
+    background: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .textValue {
+    text-align: center;
+    font-size: 14px;
+    color: #4f4f4f;
+  }
+}
