@@ -1,56 +1,52 @@
 import { useState } from "react";
 
 import { Typography } from "@mui/material";
-import { StatusHandler } from "../../lib/status-handler";
-import { RepoScreen } from "../repo-screen/repo-screen";
-import { Header } from "../header/header";
+import { StatusHandler } from "@/components/lib/status-handler";
+import { RepoScreen } from "@/components/ui/repo-screen/repo-screen";
+import { Header } from "@/components/ui/header/header";
 
-import { useAppSelector } from "../../../hooks/useAppSelector";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { getRepositories } from "@/features/repo-slice";
 
 import styles from "./main-screen.module.scss";
 
-import type { MouseEvent, ChangeEvent } from "react";
-
 export const MainScreen = () => {
+  const dispatch = useAppDispatch();
   const { repositories, status, error } = useAppSelector((state) => state.repos);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const handlePageClick = (_event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPage(newPage);
+  const onSearch = (query: string) => {
+    if (query.trim()) {
+      dispatch(getRepositories({ query, page: currentPage + 1, perPage: 100 }));
+    }
   };
 
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const onNextPageChange = (page: number) => {
+    setCurrentPage(page);
   };
+
+  const onRowsMorePerPageChange = (rowsPerPage: number) => {
+    setRowsPerPage(rowsPerPage);
+  };
+
+  console.log(styles.mainText);
 
   return (
     <>
-      <Header perPage={rowsPerPage} page={page} />
+      <Header onSearch={onSearch} />
       <StatusHandler status={[status === "idle"]}>
-        <Typography variant="h3" component="div" className={styles.mainText}>
-          Добро Пожаловать
-        </Typography>
+        <Typography className={styles.mainText}>Добро Пожаловать</Typography>
       </StatusHandler>
       <StatusHandler status={[status === "loading"]}>
-        <Typography variant="h3" component="div" className={styles.mainText}>
-          Загрузка...
-        </Typography>
+        <Typography className={styles.mainText}>Загрузка...</Typography>
       </StatusHandler>
       <StatusHandler status={[status === "succeeded"]}>
-        <RepoScreen
-          data={repositories}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handlePageClick}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+        <RepoScreen data={repositories} onChangePage={onNextPageChange} onChangeRowsPerPage={onRowsMorePerPageChange} />
       </StatusHandler>
       <StatusHandler status={[status === "failed"]}>
-        <Typography variant="h3" component="div" className={styles.mainText}>
-          {error}
-        </Typography>
+        <Typography className={styles.mainText}>{error}</Typography>
       </StatusHandler>
     </>
   );

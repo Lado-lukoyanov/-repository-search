@@ -1,8 +1,18 @@
 .tableContainer {
   width: 100%;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  .title {
-    font-size: 48px;
-    font-weight: 400;
-  }
+.title {
+  font-size: 48px !important;
+  font-weight: 400;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
 }

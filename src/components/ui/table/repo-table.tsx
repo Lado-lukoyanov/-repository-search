@@ -14,10 +14,12 @@ import {
   TablePagination,
 } from "@mui/material";
 
+import { dateToFormattedString } from "@/utils/date-to-formatted-string.util";
+
 import styles from "./repo-table.module.scss";
 
 import type { MouseEvent, ChangeEvent } from "react";
-import type { Repository } from "../../../types/types";
+import type { Repository } from "@/types/types";
 
 type RepoTableProps = {
   data: Repository[];
@@ -36,30 +38,34 @@ export const RepoTable = ({
   onChangeRowsPerPage,
   rowsPerPage,
 }: RepoTableProps) => {
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const [orderBy, setOrderBy] = useState<"stargazers_count" | "forks_count" | "updated_at">("stargazers_count");
+  const [filter, setFilter] = useState<"asc" | "desc">("asc");
+  const [filterBy, setFilterBy] = useState<"stargazers_count" | "forks_count" | "updated_at">("stargazers_count");
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
-  const handleRequestSort = (property: "stargazers_count" | "forks_count" | "updated_at") => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+  const onRequestSort = (property: "stargazers_count" | "forks_count" | "updated_at") => {
+    const isAsc = filterBy === property && filter === "asc";
+    setFilter(isAsc ? "desc" : "asc");
+    setFilterBy(property);
   };
 
   const sortRepositories = (repos: Repository[]) => {
     return repos.slice().sort((a, b) => {
-      if (orderBy === "stargazers_count" || orderBy === "forks_count") {
-        return (order === "asc" ? 1 : -1) * (a[orderBy] - b[orderBy]);
+      if (filterBy === "stargazers_count" || filterBy === "forks_count") {
+        return (filter === "asc" ? 1 : -1) * (a[filterBy] - b[filterBy]);
       } else {
-        return (order === "asc" ? 1 : -1) * (new Date(a[orderBy]).getTime() - new Date(b[orderBy]).getTime());
+        return (filter === "asc" ? 1 : -1) * (new Date(a[filterBy]).getTime() - new Date(b[filterBy]).getTime());
       }
     });
   };
 
+  const onRowClick = (repo: Repository) => {
+    setSelectedRowId(repo.id);
+    onSelected(repo);
+  };
+
   return (
     <Box className={styles.tableContainer}>
-      <Typography variant="h3" component="div">
-        Результаты поиска
-      </Typography>
+      <Typography className={styles.title}>Результаты поиска</Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -68,27 +74,27 @@ export const RepoTable = ({
               <TableCell>Язык</TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={orderBy === "forks_count"}
-                  direction={orderBy === "forks_count" ? order : "asc"}
-                  onClick={() => handleRequestSort("forks_count")}
+                  active={filterBy === "forks_count"}
+                  direction={filterBy === "forks_count" ? filter : "asc"}
+                  onClick={() => onRequestSort("forks_count")}
                 >
                   Число форков
                 </TableSortLabel>
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={orderBy === "stargazers_count"}
-                  direction={orderBy === "stargazers_count" ? order : "asc"}
-                  onClick={() => handleRequestSort("stargazers_count")}
+                  active={filterBy === "stargazers_count"}
+                  direction={filterBy === "stargazers_count" ? filter : "asc"}
+                  onClick={() => onRequestSort("stargazers_count")}
                 >
                   Число звезд
                 </TableSortLabel>
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={orderBy === "updated_at"}
-                  direction={orderBy === "updated_at" ? order : "asc"}
-                  onClick={() => handleRequestSort("updated_at")}
+                  active={filterBy === "updated_at"}
+                  direction={filterBy === "updated_at" ? filter : "asc"}
+                  onClick={() => onRequestSort("updated_at")}
                 >
                   Дата обновления
                 </TableSortLabel>
@@ -96,27 +102,35 @@ export const RepoTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortRepositories(data).map((repo) => (
-              <TableRow key={repo.id} onClick={() => onSelected(repo)}>
-                <TableCell>{repo.name}</TableCell>
-                <TableCell>{repo.language}</TableCell>
-                <TableCell>{repo.forks_count}</TableCell>
-                <TableCell>{repo.stargazers_count}</TableCell>
-                <TableCell>{repo.updated_at}</TableCell>
-              </TableRow>
-            ))}
+            {sortRepositories(data)
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((value) => (
+                <TableRow
+                  className={selectedRowId === value.id ? styles.selectedRow : ""}
+                  key={value.id}
+                  onClick={() => onRowClick(value)}
+                >
+                  <TableCell>{value.name}</TableCell>
+                  <TableCell>{value.language}</TableCell>
+                  <TableCell>{value.forks_count}</TableCell>
+                  <TableCell>{value.stargazers_count}</TableCell>
+                  <TableCell>{dateToFormattedString(value.updated_at)}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={onChangePage}
-        onRowsPerPageChange={onChangeRowsPerPage}
-      ></TablePagination>
+      <Box>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 20, 30]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={onChangePage}
+          onRowsPerPageChange={onChangeRowsPerPage}
+        />
+      </Box>
     </Box>
   );
 };

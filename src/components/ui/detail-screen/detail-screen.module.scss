@@ -1,0 +1,63 @@
+.detailContainer {
+  padding: 24px;
+  position: relative;
+}
+
+.boxMarginTop {
+  margin-top: 3rem;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.status {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.statusMargin {
+  margin: 0 2px;
+}
+
+.privateStatus {
+  color: #f44336;
+}
+
+.publicStatus {
+  color: #4caf50;
+}
+
+.text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.language {
+  color: #007bff;
+}
+
+.url {
+  font-size: 16px;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+}
+
+.link {
+  margin-left: 1rem;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #007bff;
+  text-decoration: none;
+  font-size: 16px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -8,5 +8,4 @@ export type RequestParams = {
 
 export type ResponseParams = {
   items: Repository[];
-  total_count: number;
 };

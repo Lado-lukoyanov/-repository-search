@@ -12,8 +12,14 @@
     width: 30%;
     background: #f2f2f2;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+  }
+
+  .textValueContainer {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    flex: 1;
   }
 
   .textValue {

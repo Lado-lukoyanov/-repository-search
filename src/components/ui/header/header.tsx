@@ -1,23 +1,19 @@
 import { useState } from "react";
 
 import { AppBar, Toolbar, InputBase, Button } from "@mui/material";
-import { getRepositories } from "../../../features/repoSlice";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
 
 import styles from "./header.module.scss";
 
 type HeaderProps = {
-  page: number;
-  perPage: number;
+  onSearch: (query: string) => void;
 };
 
-export const Header = ({ page, perPage }: HeaderProps) => {
+export const Header = ({ onSearch }: HeaderProps) => {
   const [query, setQuery] = useState("");
-  const dispatch = useAppDispatch();
 
-  const handleSearch = () => {
+  const onClickSearch = () => {
     if (query.trim()) {
-      dispatch(getRepositories({ query, page, perPage }));
+      onSearch(query);
     }
   };
 
@@ -32,7 +28,7 @@ export const Header = ({ page, perPage }: HeaderProps) => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <Button variant="contained" className={styles.button} onClick={handleSearch}>
+          <Button variant="contained" className={styles.button} onClick={onClickSearch}>
             Искать
           </Button>
         </div>

@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { repoSlice } from "../features/repoSlice";
+import { reducer } from "@/features/repo-slice";
 
 export const store = configureStore({
   reducer: {
-    repos: repoSlice.reducer,
+    repos: reducer,
   },
 });
 
